@@ -70,7 +70,7 @@ class Runner(object):
         #
         # Define the dataset and dataloader, train and test, using short-hand strings
         #
-        if self.inp_label_key == 'Kantarell vs Fluesvamp':
+        if self.inp_label_key == 'Upper Body vs Lower Body':
             label_keys = ('Family == "Cantharellaceae"', 'Family == "Amanitaceae"')
         elif self.inp_label_key == 'Champignon vs Fluesvamp':
             label_keys = ('Genus == "Agaricus"', 'Genus == "Amanita"')
