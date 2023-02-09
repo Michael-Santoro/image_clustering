@@ -8,12 +8,28 @@ import numpy as np
 import os
 from skimage import io
 
+from enum import Enum
 from dataclasses import dataclass
 
 import torch
 from torch.utils.data import Dataset
 
 import img_transforms
+
+class RawData(Enum):
+    '''Number of rows in the image raw data'''
+    N_ROWS = 105542
+    '''Name of headers in raw data file'''
+    HEADERS = ['article_id', 'product_code', 'prod_name', 'product_type_no',
+       'product_type_name', 'product_group_name', 'graphical_appearance_no',
+       'graphical_appearance_name', 'colour_group_code', 'colour_group_name',
+       'perceived_colour_value_id', 'perceived_colour_value_name',
+       'perceived_colour_master_id', 'perceived_colour_master_name',
+       'department_no', 'department_name', 'index_code', 'index_name',
+       'index_group_no', 'index_group_name', 'section_no', 'section_name',
+       'garment_group_no', 'garment_group_name', 'detail_desc']
+    '''Fungi level specification names'''
+    LEVELS = HEADERS[3:]
 
 @dataclass
 class DataGetKeys:

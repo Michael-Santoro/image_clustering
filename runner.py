@@ -70,14 +70,14 @@ class Runner(object):
         #
         # Define the dataset and dataloader, train and test, using short-hand strings
         #
-        if self.inp_label_key == 'Upper Body vs Lower Body':
-            label_keys = ('Family == "Cantharellaceae"', 'Family == "Amanitaceae"')
-        elif self.inp_label_key == 'Champignon vs Fluesvamp':
-            label_keys = ('Genus == "Agaricus"', 'Genus == "Amanita"')
-        elif self.inp_label_key == 'Kantarell Species':
-            label_keys = ('Species == "Almindelig Kantarel"', 'Species == "Bleg Kantarel"',
-                          'Species == "Liden Kantarel"', 'Species == "Trompetsvamp"',
-                          'Species == "Tragt Kantarel"', 'Species == "Gra Kantarel"')
+        # if self.inp_label_key == 'Upper Body vs Lower Body':
+        #     label_keys = ('Family == "Cantharellaceae"', 'Family == "Amanitaceae"')
+        # elif self.inp_label_key == 'Champignon vs Fluesvamp':
+        #     label_keys = ('Genus == "Agaricus"', 'Genus == "Amanita"')
+        # elif self.inp_label_key == 'Kantarell Species':
+        #     label_keys = ('Species == "Almindelig Kantarel"', 'Species == "Bleg Kantarel"',
+        #                   'Species == "Liden Kantarel"', 'Species == "Trompetsvamp"',
+        #                   'Species == "Tragt Kantarel"', 'Species == "Gra Kantarel"')
         elif self.inp_label_key is None:
             label_keys = None
         else:
