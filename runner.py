@@ -487,7 +487,7 @@ def test10():
     m1, m2 = r10.confusion_matrix()
     print (m1)
 
-test2()
+#test2()
 #test3()
 #test6()
 #test8()
