@@ -23,7 +23,7 @@ from captum.attr import NoiseTunnel
 from captum.attr import visualization as viz
 
 from matplotlib.colors import LinearSegmentedColormap
-
+from hmdata import RawData
 from img_transforms import StandardTransform, DataAugmentTransform
 from ic_template_models import initialize_model
 
