@@ -25,6 +25,7 @@ from captum.attr import visualization as viz
 from matplotlib.colors import LinearSegmentedColormap
 
 from fungiimg import FungiImg, RawData, StandardTransform, DataAugmentTransform
+from img_transforms import StandardTransform, DataAugmentTransform
 from ic_template_models import initialize_model
 
 class Runner(object):
