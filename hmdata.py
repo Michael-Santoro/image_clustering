@@ -17,14 +17,12 @@ from torch.utils.data import Dataset
 import img_transforms
 
 class RawData(Enum):
-    def __init__(self,path):
-      self.articles = pd.read_csv(path)
-    '''Number of rows in the image raw data'''
-    N_ROWS = self.articles.shape
-    '''Name of headers in raw data file'''
-    HEADERS = list(self.articles.columns)
-#     '''Fungi level specification names'''
-#     LEVELS = HEADERS[:-2]
+    def __init__(self,path)
+        articles = pd.read_csv(path)
+        '''Number of rows in the image raw data'''
+        N_ROWS = articles.shape
+        '''Name of headers in raw data file'''
+        HEADERS = list(articles.columns)
 
 @dataclass
 class DataGetKeys:
