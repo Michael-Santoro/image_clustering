@@ -98,9 +98,10 @@ class Runner(object):
         #
         # Construct split of data into train and test datasets
         #
-        all_ids = list(range(RawData.N_ROWS.value))
+        raw_data = RawData
+        all_ids = list(range(raw_data.N_ROWS.value))
         shuffle(all_ids)
-        n_test = int(RawData.N_ROWS.value * f_test)
+        n_test = int(raw_data.N_ROWS.value * f_test)
         test_ids = all_ids[:n_test]
         train_ids = all_ids[n_test:]
         self.dataset_test = FungiImg(csv_file=self.inp_raw_csv_toc, root_dir=self.inp_raw_csv_root,
