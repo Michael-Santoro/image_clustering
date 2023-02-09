@@ -16,14 +16,6 @@ from torch.utils.data import Dataset
 
 import img_transforms
 
-class RawData(Enum):
-    def __init__(self,path):
-        articles = pd.read_csv(path)
-        '''Number of rows in the image raw data'''
-        N_ROWS = articles.shape
-        '''Name of headers in raw data file'''
-        HEADERS = list(articles.columns)
-
 @dataclass
 class DataGetKeys:
     '''Shared keys for the return of the datasets __getitem__ dictionary'''
@@ -34,12 +26,12 @@ class DataGetKeys:
 #
 # Various Fungi Datasets. These are accessed in the Learner via the factory function, `factory`, see below
 #
-class FungiFullBasicData(Dataset):
-    '''Fungi Dataset. Properties: full image, basic transformation of image channels, no appended data to __getitem__
+class HMDatasetFull(Dataset):
+    '''H&M Dataset. Properties: full image, basic transformation of image channels, no appended data to __getitem__
 
     Args:
-        csv_file (str): Path to CSV file with table-of-contents of the fungi raw data
-        img_root_dir (str): Path to the root directory of fungi images
+        csv_file (str): Path to CSV file with table-of-contents of the H&M raw data
+        img_root_dir (str): Path to the root directory of H&M images
         selector (optional): Pandas IndexSlice or callable that is passed to the Pandas `.loc` method in
             order to select a subset of images on basis of MultiIndex values. Defaults to None.
         iselector (optional): Colletion of integer indices or callable that is passed to the Pandas `.iloc`
