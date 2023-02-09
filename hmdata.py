@@ -17,7 +17,7 @@ from torch.utils.data import Dataset
 import img_transforms
 
 class RawData(Enum):
-    def __init__(self,path)
+    def __init__(self,path):
         articles = pd.read_csv(path)
         '''Number of rows in the image raw data'''
         N_ROWS = articles.shape
