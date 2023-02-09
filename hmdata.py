@@ -8,7 +8,6 @@ import numpy as np
 import os
 from skimage import io
 
-from enum import Enum
 from dataclasses import dataclass
 
 import torch
@@ -24,7 +23,7 @@ class DataGetKeys:
     idx: str = 'idx'
 
 #
-# Various Fungi Datasets. These are accessed in the Learner via the factory function, `factory`, see below
+# Various H & M Datasets. These are accessed in the Learner via the factory function, `factory`, see below
 #
 class HMDatasetFull(Dataset):
     '''H&M Dataset. Properties: full image, basic transformation of image channels, no appended data to __getitem__
@@ -42,9 +41,9 @@ class HMDatasetFull(Dataset):
 
     '''
     def __init__(self, csv_file, img_root_dir, selector=None, iselector=None, min_dim=224, square=True):
-        super(FungiFullBasicData, self).__init__()
+        super(HMFullBasicData, self).__init__()
 
-        self._core = _FungiDataCore(csv_file, img_root_dir, selector=selector, iselector=iselector)
+        self._core = _HMDataCore(csv_file, img_root_dir, selector=selector, iselector=iselector)
         self._core._set_level_attr(self)
         self.returnkey = DataGetKeys()
         del self.returnkey.label
@@ -59,12 +58,12 @@ class HMDatasetFull(Dataset):
         return {self.returnkey.image : image}
 
 
-class FungiFullBasicLabelledData(Dataset):
-    '''Fungi Dataset. Properties: full image, basic transformation of image channels, label appended to __getitem__
+class HMFullBasicLabelledData(Dataset):
+    '''H & M Dataset. Properties: full image, basic transformation of image channels, label appended to __getitem__
 
     Args:
-        csv_file (str): Path to CSV file with table-of-contents of the fungi raw data
-        img_root_dir (str): Path to the root directory of fungi images
+        csv_file (str): Path to CSV file with table-of-contents of the H & M raw data
+        img_root_dir (str): Path to the root directory of H & M images
         label_keys (iterable of str): Collection of strings pass to the Pandas `.query` method in order
             to define subsets of the data that should be assigned integer class labels. If None, the
             indexing of the class returns the image tensor object, if not None, the indexing of the class
@@ -82,9 +81,9 @@ class FungiFullBasicLabelledData(Dataset):
 
     '''
     def __init__(self, csv_file, img_root_dir, label_keys, selector=None, iselector=None, min_dim=224, square=False):
-        super(FungiFullBasicLabelledData, self).__init__()
+        super(HMFullBasicLabelledData, self).__init__()
 
-        self._core = _FungiDataCore(csv_file, img_root_dir, selector=selector, iselector=iselector,
+        self._core = _HMDataCore(csv_file, img_root_dir, selector=selector, iselector=iselector,
                                     label_keys=label_keys)
         self._core._set_level_attr(self)
         self.returnkey = DataGetKeys()
@@ -101,12 +100,12 @@ class FungiFullBasicLabelledData(Dataset):
         return {self.returnkey.image : image, self.returnkey.label : label}
 
 
-class FungiFullAugLabelledData(Dataset):
-    '''Fungi Dataset. Properties: full image, augmentation transformation of image channels, label appended to __getitem__
+class HMFullAugLabelledData(Dataset):
+    '''H & M Dataset. Properties: full image, augmentation transformation of image channels, label appended to __getitem__
 
     Args:
-        csv_file (str): Path to CSV file with table-of-contents of the fungi raw data
-        img_root_dir (str): Path to the root directory of fungi images
+        csv_file (str): Path to CSV file with table-of-contents of the H & M raw data
+        img_root_dir (str): Path to the root directory of H & M images
         label_keys (iterable of str): Collection of strings pass to the Pandas `.query` method in order
             to define subsets of the data that should be assigned integer class labels. If None, the
             indexing of the class returns the image tensor object, if not None, the indexing of the class
@@ -122,9 +121,9 @@ class FungiFullAugLabelledData(Dataset):
     '''
     def __init__(self, csv_file, img_root_dir, label_keys, aug_multiplicity, aug_label, min_dim=224, square=False,
                  selector=None, iselector=None):
-        super(FungiFullAugLabelledData, self).__init__()
+        super(HMFullAugLabelledData, self).__init__()
 
-        self._core = _FungiDataCore(csv_file, img_root_dir, selector=selector, iselector=iselector,
+        self._core = _HMDataCore(csv_file, img_root_dir, selector=selector, iselector=iselector,
                                     label_keys=label_keys)
         self._core._set_level_attr(self)
         self.returnkey = DataGetKeys()
@@ -141,19 +140,19 @@ class FungiFullAugLabelledData(Dataset):
         return self._core.__len__() * self.aug_multiplicity
 
     def __getitem__(self, idx):
-        idx_fungi = int(np.floor(idx / (1 + self.aug_multiplicity)))
+        idx_hm = int(np.floor(idx / (1 + self.aug_multiplicity)))
         idx_aug_transform = idx % (1 + self.aug_multiplicity)
-        raw_out = self._core[idx_fungi]
+        raw_out = self._core[idx_hm]
         image = self._transform[idx_aug_transform](raw_out['image'])
         label = raw_out['label']
         return {self.returnkey.image : image, self.returnkey.label : label}
 
-class FungiFullBasicIdxData(FungiFullBasicData):
-    '''Fungi Dataset. Properties: full image, basic transformation of image channels, image index appended data to __getitem__
+class HMFullBasicIdxData(HMFullBasicData):
+    '''H & M Dataset. Properties: full image, basic transformation of image channels, image index appended data to __getitem__
 
     Args:
-        csv_file (str): Path to CSV file with table-of-contents of the fungi raw data
-        img_root_dir (str): Path to the root directory of fungi images
+        csv_file (str): Path to CSV file with table-of-contents of the H & M raw data
+        img_root_dir (str): Path to the root directory of H & M images
         selector (optional): Pandas IndexSlice or callable that is passed to the Pandas `.loc` method in
             order to select a subset of images on basis of MultiIndex values. Defaults to None.
         iselector (optional): Colletion of integer indices or callable that is passed to the Pandas `.iloc`
@@ -164,7 +163,7 @@ class FungiFullBasicIdxData(FungiFullBasicData):
 
     '''
     def __init__(self, csv_file, img_root_dir, selector=None, iselector=None):
-        super(FungiFullBasicIdxData, self).__init__(csv_file=csv_file, img_root_dir=img_root_dir,
+        super(HMFullBasicIdxData, self).__init__(csv_file=csv_file, img_root_dir=img_root_dir,
                                                     selector=selector, iselector=iselector,
                                                     square=True)
 
@@ -177,12 +176,12 @@ class FungiFullBasicIdxData(FungiFullBasicData):
         return ret_dict
 
 
-class FungiGridBasicData(Dataset):
-    '''Fungi Dataset. Properties: grid image, basic transformation of image channels, no appended data to __getitem__
+class HMGridBasicData(Dataset):
+    '''H & M Dataset. Properties: grid image, basic transformation of image channels, no appended data to __getitem__
 
     Args:
-        csv_file (str): Path to CSV file with table-of-contents of the fungi raw data
-        img_root_dir (str): Path to the root directory of fungi images
+        csv_file (str): Path to CSV file with table-of-contents of the H & M raw data
+        img_root_dir (str): Path to the root directory of H & M images
         selector (optional): Pandas IndexSlice or callable that is passed to the Pandas `.loc` method in
             order to select a subset of images on basis of MultiIndex values. Defaults to None.
         iselector (optional): Colletion of integer indices or callable that is passed to the Pandas `.iloc`
@@ -199,9 +198,9 @@ class FungiGridBasicData(Dataset):
     '''
     def __init__(self, csv_file, img_root_dir, selector=None, iselector=None,
                  img_input_dim=224, img_n_splits=6, crop_step_size=32, crop_dim=64):
-        super(FungiGridBasicData, self).__init__()
+        super(HMGridBasicData, self).__init__()
 
-        self._core = _FungiDataCore(csv_file, img_root_dir, selector=selector, iselector=iselector)
+        self._core = _HMDataCore(csv_file, img_root_dir, selector=selector, iselector=iselector)
         self._core._set_level_attr(self)
         self.returnkey = DataGetKeys()
         del self.returnkey.label
@@ -215,19 +214,19 @@ class FungiGridBasicData(Dataset):
         return self._core.__len__() * self._transform.n_blocks
 
     def __getitem__(self, idx):
-        idx_fungi = int(np.floor(idx / self._transform.n_blocks))
+        idx_hm = int(np.floor(idx / self._transform.n_blocks))
         idx_sub = idx % self._transform.n_blocks
-        raw_out = self._core[idx_fungi]
+        raw_out = self._core[idx_hm]
         img_crops = self._transform(raw_out['image'])
         return {self.returnkey.image : img_crops[idx_sub]}
 
 
-class FungiGridBasicIdxData(FungiGridBasicData):
-    '''Fungi Dataset. Properties: grid image, basic transformation of image channels, image index appended data to __getitem__
+class HMGridBasicIdxData(HMGridBasicData):
+    '''H & M Dataset. Properties: grid image, basic transformation of image channels, image index appended data to __getitem__
 
     Args:
-        csv_file (str): Path to CSV file with table-of-contents of the fungi raw data
-        img_root_dir (str): Path to the root directory of fungi images
+        csv_file (str): Path to CSV file with table-of-contents of the H & M raw data
+        img_root_dir (str): Path to the root directory of H & M images
         selector (optional): Pandas IndexSlice or callable that is passed to the Pandas `.loc` method in
             order to select a subset of images on basis of MultiIndex values. Defaults to None.
         iselector (optional): Colletion of integer indices or callable that is passed to the Pandas `.iloc`
@@ -244,7 +243,7 @@ class FungiGridBasicIdxData(FungiGridBasicData):
     '''
     def __init__(self, csv_file, img_root_dir, selector=None, iselector=None,
                  img_input_dim=224, img_n_splits=6, crop_step_size=32, crop_dim=64):
-        super(FungiGridBasicIdxData, self).__init__(csv_file, img_root_dir, selector=selector, iselector=iselector,
+        super(HMGridBasicIdxData, self).__init__(csv_file, img_root_dir, selector=selector, iselector=iselector,
                                                  img_input_dim=img_input_dim, img_n_splits=img_n_splits,
                                                  crop_step_size=crop_step_size, crop_dim=crop_dim)
 
@@ -257,12 +256,12 @@ class FungiGridBasicIdxData(FungiGridBasicData):
         return ret_dict
 
 
-class _FungiDataCore(object):
+class _HMDataCore(object):
     '''The core data class that contains all logic related to the raw data files and their construction.
 
     Args:
-        csv_file (str): CSV file with table-of-contents of the fungi raw data
-        img_root_dir (str): Path to the root directory of fungi images
+        csv_file (str): CSV file with table-of-contents of the H & M raw data
+        img_root_dir (str): Path to the root directory of H & M images
         selector (optional): Pandas IndexSlice or callable that is passed to the Pandas `.loc` method in
             order to select a subset of images on basis of MultiIndex values. Defaults to None.
         iselector (optional): Colletion of integer indices or callable that is passed to the Pandas `.iloc`
@@ -289,10 +288,10 @@ class _FungiDataCore(object):
             self.img_toc = pd.concat(self._assign_label(self.label_keys))
 
     def _set_level_attr(self, obj):
-        '''Add attributes to input object that denotes how numerous different levels of fungi data are.
+        '''Add attributes to input object that denotes how numerous different levels of H & M data are.
 
         Args:
-            obj : Object to add attributes to. Typically the `self` of a Fungi Dataset
+            obj : Object to add attributes to. Typically the `self` of a H & M Dataset
 
         '''
         for level in RawData.LEVELS.value:
@@ -340,7 +339,7 @@ class _FungiDataCore(object):
 
         Each query string define a class. The query string can refer to individual species, genus, family etc. or
         collections thereof. For example, the tuple `('Family == "Cantharellaceae"', 'Family == "Amanitaceae"')`
-        defines two labels for all fungi in either of the two families.
+        defines two labels for all H & M in either of the two families.
 
         Args:
             l_keys (iterable): list of query strings for Pandas DataFrame, where each query string defines a class to be
@@ -364,11 +363,11 @@ class _FungiDataCore(object):
         return category_slices
 
     def _n_x(self, x_label):
-        '''Compute number of distinct types of fungi at a given step in the hierarchy'''
+        '''Compute number of distinct types of H & M at a given step in the hierarchy'''
         return len(self.img_toc.groupby(x_label))
 
     def _n_instances_x(self, x_label):
-        '''Compute number of images for each type of fungi at a given step in the hierarchy'''
+        '''Compute number of images for each type of H & M at a given step in the hierarchy'''
         return self.img_toc.groupby(x_label).count()[RawData.HEADERS.value[-1]].to_dict()
 
     @property
@@ -378,40 +377,40 @@ class _FungiDataCore(object):
 
 
 #
-# Various Fungi Dataset builders, which instantiate a Fungi Dataset. The builders are used by the factory
+# Various H & M Dataset builders, which instantiate a H & M Dataset. The builders are used by the factory
 # function `factory`, see below.
 #
 
-class FungiFullBasicDataBuilder(object):
+class HMFullBasicDataBuilder(object):
     def __init__(self):
         self._instance = None
 
     def __call__(self, csv_file, img_root_dir, selector=None, iselector=None,
                  img_input_dim=224, square=False, **_ignored):
-        self._instance = FungiFullBasicData(csv_file=csv_file, img_root_dir=img_root_dir,
+        self._instance = HMFullBasicData(csv_file=csv_file, img_root_dir=img_root_dir,
                                             selector=selector, iselector=iselector, square=square,
                                             min_dim=img_input_dim)
         return self._instance
 
-class FungiFullBasicLabelledDataBuilder(object):
+class HMFullBasicLabelledDataBuilder(object):
     def __init__(self):
         self._instance = None
 
     def __call__(self, csv_file, img_root_dir, label_keys, selector=None, iselector=None,
                        min_dim=224, square=False, **_ignored):
-        self._instance = FungiFullBasicLabelledData(csv_file=csv_file, img_root_dir=img_root_dir,
+        self._instance = HMFullBasicLabelledData(csv_file=csv_file, img_root_dir=img_root_dir,
                                                     label_keys=label_keys,
                                                     selector=selector, iselector=iselector,
                                                     min_dim=min_dim, square=square)
         return self._instance
 
-class FungiFullAugLabelledDataBuilder(object):
+class HMFullAugLabelledDataBuilder(object):
     def __init__(self):
         self._instance = None
 
     def __call__(self, csv_file, img_root_dir, label_keys, aug_multiplicity, aug_label,
                  min_dim=224, square=False, selector=None, iselector=None, **_ignored):
-        self._instance = FungiFullAugLabelledData(csv_file=csv_file, img_root_dir=img_root_dir,
+        self._instance = HMFullAugLabelledData(csv_file=csv_file, img_root_dir=img_root_dir,
                                                   label_keys=label_keys,
                                                   min_dim=min_dim, square=square,
                                                   aug_multiplicity=aug_multiplicity,
@@ -419,45 +418,45 @@ class FungiFullAugLabelledDataBuilder(object):
                                                   selector=selector, iselector=iselector)
         return self._instance
 
-class FungiFullBasicIdxDataBuilder(object):
+class HMFullBasicIdxDataBuilder(object):
     def __init__(self):
         self._instance = None
 
     def __call__(self, csv_file, img_root_dir, selector=None, iselector=None, **_ignored):
-        self._instance = FungiFullBasicIdxData(csv_file=csv_file, img_root_dir=img_root_dir,
+        self._instance = HMFullBasicIdxData(csv_file=csv_file, img_root_dir=img_root_dir,
                                                selector=selector, iselector=iselector)
         return self._instance
 
-class FungiGridBasicDataBuilder(object):
+class HMGridBasicDataBuilder(object):
     def __init__(self):
         self._instance = None
 
     def __call__(self, csv_file, img_root_dir,
                  img_input_dim, img_n_splits, crop_step_size, crop_dim,
                  selector=None, iselector=None, **_ignored):
-        self._instance = FungiGridBasicData(csv_file=csv_file, img_root_dir=img_root_dir,
+        self._instance = HMGridBasicData(csv_file=csv_file, img_root_dir=img_root_dir,
                                             selector=selector, iselector=iselector,
                                             img_input_dim=img_input_dim, img_n_splits=img_n_splits,
                                             crop_step_size=crop_step_size, crop_dim=crop_dim)
         return self._instance
 
-class FungiGridBasicIdxDataBuilder(object):
+class HMGridBasicIdxDataBuilder(object):
     def __init__(self):
         self._instance = None
 
     def __call__(self, csv_file, img_root_dir,
                  img_input_dim, img_n_splits, crop_step_size, crop_dim,
                  selector=None, iselector=None, **_ignored):
-        self._instance = FungiGridBasicIdxData(csv_file=csv_file, img_root_dir=img_root_dir,
+        self._instance = HMGridBasicIdxData(csv_file=csv_file, img_root_dir=img_root_dir,
                                                selector=selector, iselector=iselector,
                                                img_input_dim=img_input_dim, img_n_splits=img_n_splits,
                                                crop_step_size=crop_step_size, crop_dim=crop_dim)
         return self._instance
 
-class FungiDataFactory(object):
-    '''Interface to fungi data factories.
+class HMDataFactory(object):
+    '''Interface to H & M data factories.
 
-    Typical usage involves the invocation of the `create` method, which returns a specific Fungi dataset.
+    Typical usage involves the invocation of the `create` method, which returns a specific H & M dataset.
 
     '''
     def __init__(self):
@@ -468,7 +467,7 @@ class FungiDataFactory(object):
 
         Args:
             key (str): Key to the builder, which can be invoked by `create` method
-            builder: A Fungi Data Builder instance
+            builder: A H & M Data Builder instance
 
         '''
         self._builders[key] = builder
@@ -478,12 +477,12 @@ class FungiDataFactory(object):
         return self._builders.keys()
 
     def create(self, key, csv_file, img_root_dir, selector=None, iselector=None, **kwargs):
-        '''Method to create a fungi data set through a uniform interface
+        '''Method to create a H & M data set through a uniform interface
 
         Args:
             key (str): The name of the type of dataset to create. The available keys available in attribute `keys`
-            csv_file (str): CSV file with table-of-contents of the fungi raw data
-            img_root_dir (str): Path to the root directory of fungi images
+            csv_file (str): CSV file with table-of-contents of the H & M raw data
+            img_root_dir (str): Path to the root directory of H & M images
             selector (optional): Pandas IndexSlice or callable that is passed to the Pandas `.loc` method in
                 order to select a subset of images on basis of MultiIndex values. Defaults to None.
             iselector (optional): Colletion of integer indices or callable that is passed to the Pandas `.iloc`
@@ -497,12 +496,12 @@ class FungiDataFactory(object):
         return builder(csv_file=csv_file, img_root_dir=img_root_dir, selector=selector, iselector=iselector,
                        **kwargs)
 
-# The available pre-registrered fungi data set factory method. It can be imported and the `create` method has a
-# uniform interface for the creation of one of many possible variants of a fungi data set.
-factory = FungiDataFactory()
-factory.register_builder('full basic', FungiFullBasicDataBuilder())
-factory.register_builder('full basic labelled', FungiFullBasicLabelledDataBuilder())
-factory.register_builder('full aug labelled', FungiFullAugLabelledDataBuilder())
-factory.register_builder('full basic idx', FungiFullBasicIdxDataBuilder())
-factory.register_builder('grid basic', FungiGridBasicDataBuilder())
-factory.register_builder('grid basic idx', FungiGridBasicIdxDataBuilder())
+# The available pre-registrered H & M data set factory method. It can be imported and the `create` method has a
+# uniform interface for the creation of one of many possible variants of a H & M data set.
+factory = HMDataFactory()
+factory.register_builder('full basic', HMFullBasicDataBuilder())
+factory.register_builder('full basic labelled', HMFullBasicLabelledDataBuilder())
+factory.register_builder('full aug labelled', HMFullAugLabelledDataBuilder())
+factory.register_builder('full basic idx', HMFullBasicIdxDataBuilder())
+factory.register_builder('grid basic', HMGridBasicDataBuilder())
+factory.register_builder('grid basic idx', HMGridBasicIdxDataBuilder())
