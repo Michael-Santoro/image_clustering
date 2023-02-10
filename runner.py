@@ -23,7 +23,7 @@ from captum.attr import NoiseTunnel
 from captum.attr import visualization as viz
 
 from matplotlib.colors import LinearSegmentedColormap
-from hmdata import RawData, HMFullAugLabelledData
+from hmdata import RawData, factory
 from img_transforms import StandardTransform, DataAugmentTransform
 from ic_template_models import initialize_model
 
@@ -71,6 +71,8 @@ class Runner(object):
         # Define the dataset and dataloader, train and test, using short-hand strings
         #
         if self.inp_label_key == 'Upper Body vs Lower Body':
+
+            ## TO-DO: Need to edit this based on the h&m Dataset
             label_keys = ('Family == "Cantharellaceae"', 'Family == "Amanitaceae"')
         elif self.inp_label_key == 'Champignon vs Fluesvamp':
             label_keys = ('Genus == "Agaricus"', 'Genus == "Amanita"')
@@ -104,7 +106,7 @@ class Runner(object):
         n_test = int(RawData.N_ROWS.value * f_test)
         test_ids = all_ids[:n_test]
         train_ids = all_ids[n_test:]
-        self.dataset_test = HMFullAugLabelledData(csv_file=self.inp_raw_csv_toc, img_root_dir=self.inp_raw_csv_root,
+        self.dataset_test = factory.create(csv_file=self.inp_raw_csv_toc, img_root_dir=self.inp_raw_csv_root,
                                 iselector=test_ids, transform=transform,
                                 label_keys=label_keys)
         dataset_train_all = [HMFullAugLabelledData(csv_file=raw_csv_toc, img_root_dir=raw_csv_root,
@@ -488,8 +490,10 @@ def test10():
     m1, m2 = r10.confusion_matrix()
     print (m1)
 
-#test2()
-#test3()
-#test6()
-#test8()
-#test10()
+if __name__ == '__main__':
+
+    #test2()
+    #test3()
+    #test6()
+    #test8()
+    #test10()

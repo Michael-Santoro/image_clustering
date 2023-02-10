@@ -15,7 +15,7 @@ import torch
 from torch.utils.data import DataLoader
 from torch import optim
 
-import fungidata
+import hmdata
 
 class LearnerInterface(metaclass=abc.ABCMeta):
     '''Formal interface for the Learner subclasses. Any class inheriting `_Learner` will have to satisfy this
@@ -55,7 +55,7 @@ class LearnerInterface(metaclass=abc.ABCMeta):
 
 
 class _Learner(LearnerInterface):
-    '''Parent class for models working with fungi data. A child class has to implement a `compute_loss` method,
+    '''Parent class for models working with H & M data. A child class has to implement a `compute_loss` method,
     `save_model` and `load_model` methods, and a `train` method, which calls the `_train` method of the parent.
 
     Args:
@@ -101,7 +101,7 @@ class _Learner(LearnerInterface):
             torch.backends.cudnn.benchmark = False
 
         # Define the dataset and method to load it during training
-        self.dataset = fungidata.factory.create(self.inp_dataset_type, raw_csv_toc, raw_csv_root,
+        self.dataset = hmdata.factory.create(self.inp_dataset_type, raw_csv_toc, raw_csv_root,
                                                 selector=selector, iselector=iselector,
                                                 **self.inp_dataset_kwargs)
         self.dataset_size = len(self.dataset)
