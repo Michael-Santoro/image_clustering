@@ -98,7 +98,7 @@ class Runner(object):
         #
         # Construct split of data into train and test datasets
         #
-        raw_data = RawData
+        raw_data = RawData()
         all_ids = list(range(raw_data.N_ROWS.value))
         shuffle(all_ids)
         n_test = int(raw_data.N_ROWS.value * f_test)
