@@ -23,7 +23,7 @@ from captum.attr import NoiseTunnel
 from captum.attr import visualization as viz
 
 from matplotlib.colors import LinearSegmentedColormap
-from hmdata import RawData
+from hmdata import RawData,HMDataFactory
 from img_transforms import StandardTransform, DataAugmentTransform
 from ic_template_models import initialize_model
 
@@ -32,7 +32,7 @@ class Runner(object):
     A helpful wrapper
 
     '''
-    def __init__(self, run_label='Fungi Standard Run', random_seed=42, f_out=sys.stdout,
+    def __init__(self, run_label='H & M Standard Run', random_seed=42, f_out=sys.stdout,
                        raw_csv_toc='toc_full.csv', raw_csv_root='.',
                        transform_imgs='standard_300',
                        transforms_aug_train=['random_resized_crop'],
@@ -104,10 +104,10 @@ class Runner(object):
         n_test = int(RawData.N_ROWS.value * f_test)
         test_ids = all_ids[:n_test]
         train_ids = all_ids[n_test:]
-        self.dataset_test = FungiImg(csv_file=self.inp_raw_csv_toc, root_dir=self.inp_raw_csv_root,
+        self.dataset_test = HMDataFactory(csv_file=self.inp_raw_csv_toc, root_dir=self.inp_raw_csv_root,
                                 iselector=test_ids, transform=transform,
                                 label_keys=label_keys)
-        dataset_train_all = [FungiImg(csv_file=raw_csv_toc, root_dir=raw_csv_root,
+        dataset_train_all = [HMDataFactory(csv_file=raw_csv_toc, root_dir=raw_csv_root,
                                       iselector=train_ids, transform=transform,
                                       label_keys=label_keys)]
 
@@ -116,7 +116,7 @@ class Runner(object):
         #
         for t_aug_label in self.inp_transforms_aug_train:
             transform = DataAugmentTransform(t_aug_label, mdim, to_tensor=True, normalize=False)
-            dataset_train_x = FungiImg(csv_file=raw_csv_toc, root_dir=raw_csv_root,
+            dataset_train_x = HMDataFactory(csv_file=raw_csv_toc, root_dir=raw_csv_root,
                                        iselector=train_ids, transform=transform,
                                        label_keys=label_keys)
             dataset_train_all.append(dataset_train_x)
