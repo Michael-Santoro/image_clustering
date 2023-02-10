@@ -288,7 +288,7 @@ class _HMDataCore(object):
             returns the image tensor object and the integer class label.
 
     '''
-    def __init__(self, csv_file, img_root_dir, selector=None, iselector=None, label_keys=None):
+    def __init__(self, csv_file, img_root_dir, selector=None, label_keys=None):
 
         self.img_toc = pd.read_csv(csv_file)
         self.img_root_dir = img_root_dir
