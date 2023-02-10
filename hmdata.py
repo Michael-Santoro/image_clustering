@@ -290,7 +290,7 @@ class _HMDataCore(object):
     '''
     def __init__(self, csv_file, img_root_dir, selector=None, iselector=None, label_keys=None):
 
-        self.img_toc = pd.read_csv(csv_file, index_col=(0,1,2,3,4,5,6,7,8))
+        self.img_toc = pd.read_csv(csv_file)
         self.img_root_dir = img_root_dir
         self.label_keys = label_keys
 

@@ -1,4 +1,4 @@
-'''Bla bla
+'''H&M Image Classification Runs
 
 '''
 from pandas import IndexSlice
@@ -7,9 +7,11 @@ from numpy.random import shuffle
 from torch.utils.data import DataLoader
 
 from ic_learner import ICLearner
-from fungidata import factory
+from hmdatadata import factory
 
-label_binary_cf = ('Family == "Cantharellaceae"', 'Family == "Amanitaceae"')
+label_cf = ('index_group_name == "Ladieswear"',
+            'index_group_name == "Baby/Childresn"',
+            'index_group_name == "Other"')
 
 tt = IndexSlice[:, :, :, :, :, ['Cantharellaceae', 'Amanitaceae'], :, :, :]
 v1 = list(range(759))
@@ -19,7 +21,7 @@ shuffle(v2)
 vv = v1[:500] + v2[:1000]
 vv_test = v1[500:700] + v2[1000:1300]
 dataset2 = factory.create('full basic labelled', csv_file='../../Desktop/Fungi/toc_full.csv',
-                         img_root_dir='../../Desktop/Fungi', label_keys=label_binary_cf,
+                         img_root_dir='../../Desktop/Fungi', label_keys=label_cf,
                          selector=tt, iselector=vv_test, min_dim=299)
 dataloader_test = DataLoader(dataset2, batch_size=16, shuffle=False)
 
