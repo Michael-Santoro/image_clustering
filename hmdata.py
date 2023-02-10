@@ -294,14 +294,10 @@ class _HMDataCore(object):
         self.img_root_dir = img_root_dir
         self.label_keys = label_keys
 
-        if not selector is None:
-            self.img_toc = self.img_toc.loc[selector]
+        ##column with labels included
+        self.selector = selector
 
-        if not iselector is None:
-            self.img_toc = self.img_toc.iloc[iselector]
 
-        if not label_keys is None:
-            self.img_toc = pd.concat(self._assign_label(self.label_keys))
 
     def _set_level_attr(self, obj):
         '''Add attributes to input object that denotes how numerous different levels of H & M data are.
