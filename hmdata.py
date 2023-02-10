@@ -41,7 +41,7 @@ class DataGetKeys:
 #
 # Various H & M Datasets. These are accessed in the Learner via the factory function, `factory`, see below
 #
-class HMDatasetFullBasicData(Dataset):
+class HMFullBasicData(Dataset):
     '''H&M Dataset. Properties: full image, basic transformation of image channels, no appended data to __getitem__
 
     Args:
