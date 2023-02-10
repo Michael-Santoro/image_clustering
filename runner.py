@@ -104,10 +104,10 @@ class Runner(object):
         n_test = int(RawData.N_ROWS.value * f_test)
         test_ids = all_ids[:n_test]
         train_ids = all_ids[n_test:]
-        self.dataset_test = HMDataFactory(csv_file=self.inp_raw_csv_toc, root_dir=self.inp_raw_csv_root,
+        self.dataset_test = HMFullAugLabelledData(csv_file=self.inp_raw_csv_toc, root_dir=self.inp_raw_csv_root,
                                 iselector=test_ids, transform=transform,
                                 label_keys=label_keys)
-        dataset_train_all = [HMDataFactory(csv_file=raw_csv_toc, root_dir=raw_csv_root,
+        dataset_train_all = [HMFullAugLabelledData(csv_file=raw_csv_toc, root_dir=raw_csv_root,
                                       iselector=train_ids, transform=transform,
                                       label_keys=label_keys)]
 
@@ -116,7 +116,7 @@ class Runner(object):
         #
         for t_aug_label in self.inp_transforms_aug_train:
             transform = DataAugmentTransform(t_aug_label, mdim, to_tensor=True, normalize=False)
-            dataset_train_x = HMDataFactory(csv_file=raw_csv_toc, root_dir=raw_csv_root,
+            dataset_train_x = HMFullAugLabelledData(csv_file=raw_csv_toc, root_dir=raw_csv_root,
                                        iselector=train_ids, transform=transform,
                                        label_keys=label_keys)
             dataset_train_all.append(dataset_train_x)
